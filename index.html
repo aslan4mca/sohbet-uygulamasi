@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sohbet Uygulaması</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; /* Taşmayı önler */
+        }
+        
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8); /* Yüklenirken arka plan */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loader {
+            border: 16px solid #f3f3f3; /* Arka plan rengi */
+            border-top: 16px solid #3498db; /* Yükleniyor rengi */
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #loading-text {
+            position: absolute;
+            font-size: 24px;
+            color: #3498db; /* Yazı rengi */
+            font-weight: bold;
+        }
+
+        .container {
+            display: none; /* Başlangıçta tüm konteynerler gizli */
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #home-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            height: 100vh;
+            width: 100vw;
+            background-color: #f8f9fa; /* Açık arka plan */
+        }
+
+        #search-container {
+            width: 100%;
+            padding: 10px;
+            background-color: #ffffff; /* Arama çubuğu arka plan rengi */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        #search {
+            width: 90%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .profile {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 15px;
+            background-color: #ffffff; /* Profil kartı arka plan rengi */
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile button {
+            background-color: #3498db; /* Buton rengi */
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .profile button:hover {
+            background-color: #2980b9; /* Buton hover rengi */
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <div id="loading-text">Yükleniyor...</div>
+        <div class="loader"></div>
+    </div>
+
+    <div id="login-container" class="container">
+        <h1>Giriş Yap</h1>
+        <input type="text" id="login-identifier" placeholder="Kullanıcı Adı veya E-posta">
+        <input type="password" id="password" placeholder="Şifre">
+        <button onclick="login()">Giriş</button>
+        <p>Hesabınız yok mu? <a href="#" onclick="showRegister()">Kayıt Ol</a></p>
+    </div>
+
+    <div id="register-container" class="container" style="display: none;">
+        <h1>Kayıt Ol</h1>
+        <input type="email" id="email" placeholder="Geçerli E-posta">
+        <input type="text" id="reg-username" placeholder="Kullanıcı Adı">
+        <input type="date" id="birthdate" placeholder="Doğum Tarihi">
+        <select id="gender">
+            <option value="" disabled selected>Cinsiyet Seçin</option>
+            <option value="erkek">Erkek</option>
+            <option value="kadın">Kadın</option>
+            <option value="diğer">Diğer</option>
+        </select>
+        <input type="password" id="reg-password" placeholder="Şifre">
+        <button onclick="register()">Kayıt Ol</button>
+        <p>Hesabınız var mı? <a href="#" onclick="showLogin()">Giriş Yap</a></p>
+    </div>
+
+    <div id="home-container" class="container" style="display: none;">
+        <div id="search-container">
+            <input type="text" id="search" placeholder="Kullanıcı Ara...">
+        </div>
+        <h1>Anasayfa</h1>
+        <div class="profile">
+            <span>Ahmet</span>
+            <button onclick="sendRequest('Ahmet')">Sohbet İsteği Gönder</button>
+        </div>
+        <div class="profile">
+            <span>Mehmet</span>
+            <button onclick="sendRequest('Mehmet')">Sohbet İsteği Gönder</button>
+        </div>
+        <div class="profile">
+            <span>Ali</span>
+            <button onclick="sendRequest('Ali')">Sohbet İsteği Gönder</button>
+        </div>
+        <div class="profile">
+            <span>Veli</span>
+            <button onclick="sendRequest('Veli')">Sohbet İsteği Gönder</button>
+        </div>
+    </div>
+
+    <div id="profile-container" class="container" style="display: none;">
+        <header>
+            <h1>Profil Sayfası</h1>
+        </header>
+        <div class="profile-info">
+            <h2>Kullanıcı Bilgileri</h2>
+            <p id="profile-username"></p>
+            <p id="profile-email"></p>
+            <p id="profile-birthdate"></p>
+            <p id="profile-gender"></p>
+        </div>
+        <button onclick="showHome()">Geri Dön</button>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Yükleniyor ekranını gizle ve giriş sayfasını göster
+        window.onload = function() {
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('login-container').style.display = 'flex'; // Giriş ekranını göster
+        };
+    </script>
+</body>
+</html>
